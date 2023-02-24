@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using System.Windows;
 using static System.Environment;
 
@@ -9,15 +8,12 @@ namespace HashCalculator;
 
 internal static class Settings
 {
-    private static readonly IFormatter formatter = new BinaryFormatter();
     private static Configure? config = null;
-    private static readonly string appBaseDataPath = GetFolderPath(
-        SpecialFolder.LocalApplicationData
-    );
-    private static readonly DirectoryInfo configDir = new(
-        Path.Combine(appBaseDataPath, "HashCalculator")
-    );
-    private static readonly string configFile = Path.Combine(configDir.FullName, "config.bin");
+    private static readonly DirectoryInfo configDir =
+        new(Path.Combine(GetFolderPath(
+            SpecialFolder.LocalApplicationData), "HashCalculator"));
+    private static readonly string configFile = Path.Combine(
+        configDir.FullName, "config.json");
 
     public static Configure Current
     {
@@ -26,7 +22,7 @@ internal static class Settings
             config ??= LoadConfigure();
             return config;
         }
-        set { config = value; /*SaveConfigure();*/ }
+        set { config = value; }
     }
 
     public static bool SaveConfigure()
@@ -37,7 +33,7 @@ internal static class Settings
                 configDir.Create();
             config ??= new Configure();
             using (FileStream fs = File.Create(configFile))
-                formatter.Serialize(fs, config);
+                JsonSerializer.Serialize(fs, config, typeof(Configure));
             return true;
         }
         catch (Exception ex)
@@ -53,8 +49,10 @@ internal static class Settings
             return new Configure();
         try
         {
+            object? obj;
             using (FileStream fs = File.OpenRead(configFile))
-                return formatter.Deserialize(fs) is Configure c ? c : new Configure();
+                obj = JsonSerializer.Deserialize(fs, typeof(Configure));
+            return obj is Configure cfg ? cfg : new Configure();
         }
         catch
         {
@@ -63,68 +61,95 @@ internal static class Settings
     }
 }
 
-[Serializable]
 internal sealed class Configure
 {
     private double mainWindowWidth = 800.0;
     private double mainWindowHeight = 600.0;
     private double mainWindowTop = 0.0;
     private double mainWindowLeft = 0.0;
-    private string savedDirPath = string.Empty;
-    private SimCalc simulCalculate = SimCalc.Four;
-    private double settingsWinWidth = 400.0;
-    private double settingsWinHeight = 280.0;
-
-    public string SavedDirPath
-    {
-        get
-        {
-            if (this.savedDirPath != string.Empty)
-                return this.savedDirPath;
-            return GetFolderPath(SpecialFolder.Desktop);
-        }
-        set
-        {
-            if (value != null)
-                this.savedDirPath = value;
-            else
-                this.savedDirPath = string.Empty;
-        }
-    }
-
-    public bool RembMainWindowSize { get; set; }
+    private string theLastUsedPath = string.Empty;
+    private Concurrency concurrency = Concurrency.One;
+    private double settingsWindowWidth = 400.0;
+    private double settingsWindowHeight = 280.0;
 
     public AlgoType SelectedAlgo { get; set; }
 
     public bool MainWindowTopmost { get; set; }
 
-    public double MainWindowWidth { get { return this.mainWindowWidth; } set { this.mainWindowWidth = value; } }
+    public bool SaveMainWindowSize { get; set; }
 
-    public double MainWindowHeight { get { return this.mainWindowHeight; } set { this.mainWindowHeight = value; } }
+    public bool SaveMainWindowPosition { get; set; }
 
-    public SearchPolicy DroppedSearchPolicy { get; set; }
+    public double MainWindowTop
+    {
+        get { return this.mainWindowTop; }
+        set { this.mainWindowTop = value; }
+    }
 
-    public SearchPolicy QuickVerificationSearchPolicy { get; set; }
+    public double MainWindowLeft
+    {
+        get { return this.mainWindowLeft; }
+        set { this.mainWindowLeft = value; }
+    }
+
+    public double MainWindowWidth
+    {
+        get { return this.mainWindowWidth; }
+        set { this.mainWindowWidth = value; }
+    }
+
+    public double MainWindowHeight
+    {
+        get { return this.mainWindowHeight; }
+        set { this.mainWindowHeight = value; }
+    }
+
+    public SearchPolicy FileSearchPolicy { get; set; }
+
+    public SearchPolicy QuickVerifyFileSearchPolicy { get; set; }
 
     public bool UseLowercaseHash { get; set; }
 
-    public bool RemMainWindowPosition { get; set; }
+    public Concurrency TaskNumber
+    {
+        get { return this.concurrency; }
+        set { this.concurrency = value; }
+    }
 
-    public double MainWindowTop { get { return this.mainWindowTop; } set { this.mainWindowTop = value; } }
+    public double SettingsWindowWidth
+    {
+        get { return this.settingsWindowWidth; }
+        set { this.settingsWindowWidth = value; }
+    }
 
-    public double MainWindowLeft { get { return this.mainWindowLeft; } set { this.mainWindowLeft = value; } }
-
-    public SimCalc TaskLimit { get { return this.simulCalculate; } set { this.simulCalculate = value; } }
-
-    public double SettingsWinWidth { get { return this.settingsWinWidth; } set { this.settingsWinWidth = value; } }
-
-    public double SettingsWinHeight { get { return this.settingsWinHeight; } set { this.settingsWinHeight = value; } }
+    public double SettingsWindowHeight
+    {
+        get { return this.settingsWindowHeight; }
+        set { this.settingsWindowHeight = value; }
+    }
 
     public bool ShowResultText { get; set; }
-
-    public bool RecalculateIncomplete { get; set; }
 
     public bool NoExportColumn { get; set; }
 
     public bool NoDurationColumn { get; set; }
+
+    public string TheLastUsedPath
+    {
+        get
+        {
+            if (this.theLastUsedPath != string.Empty)
+                return this.theLastUsedPath;
+            return GetFolderPath(SpecialFolder.Desktop);
+        }
+        set
+        {
+            if (value != null)
+                this.theLastUsedPath = value;
+            else
+                this.theLastUsedPath = string.Empty;
+        }
+    }
+
+    public bool RecalculateIncomplete { get; set; }
 }

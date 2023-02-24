@@ -36,17 +36,17 @@ public partial class MainWindow : Window
         this.uiComboBox_HashAlgorithm.SelectedIndex = (int)config.SelectedAlgo;
         this.uiComboBox_HashAlgorithm.SelectionChanged +=
             this.ComboBox_HashAlgorithm_SelectionChanged;
-        if (config.RemMainWindowPosition)
+        if (config.SaveMainWindowPosition)
         {
             this.Top = config.MainWindowTop;
             this.Left = config.MainWindowLeft;
         }
-        if (config.RembMainWindowSize)
+        if (config.SaveMainWindowSize)
         {
             this.Width = config.MainWindowWidth;
             this.Height = config.MainWindowHeight;
         }
-        this.appViewModel.SetConcurrent(config.TaskLimit);
+        this.appViewModel.SetConcurrent(config.TaskNumber);
         this.appViewModel.SetColumnVisibility(
             config.NoExportColumn, config.NoDurationColumn);
     }
@@ -54,12 +54,12 @@ public partial class MainWindow : Window
     private void Window_MainWindow_Closing(object sender, CancelEventArgs e)
     {
         Configure config = Settings.Current;
-        if (config.RemMainWindowPosition)
+        if (config.SaveMainWindowPosition)
         {
             config.MainWindowTop = this.Top;
             config.MainWindowLeft = this.Left;
         }
-        if (config.RembMainWindowSize)
+        if (config.SaveMainWindowSize)
         {
             config.MainWindowWidth = this.Width;
             config.MainWindowHeight = this.Height;
@@ -70,7 +70,7 @@ public partial class MainWindow : Window
     private static void SearchUnderSpecifiedPolicy(
         IEnumerable<string> paths, List<string> outDataPaths)
     {
-        switch (Settings.Current.DroppedSearchPolicy)
+        switch (Settings.Current.FileSearchPolicy)
         {
             default:
             case SearchPolicy.Children:
@@ -135,11 +135,11 @@ public partial class MainWindow : Window
             ValidateNames = true,
             Filter = "文本文件|*.txt|所有文件|*.*",
             FileName = "hashsums.txt",
-            InitialDirectory = config.SavedDirPath,
+            InitialDirectory = config.TheLastUsedPath,
         };
         if (sf.ShowDialog() != true)
             return;
-        config.SavedDirPath = Path.GetDirectoryName(sf.FileName) ?? string.Empty;
+        config.TheLastUsedPath = Path.GetDirectoryName(sf.FileName) ?? string.Empty;
         try
         {
             using (StreamWriter sw = File.CreateText(sf.FileName))
@@ -203,11 +203,11 @@ public partial class MainWindow : Window
         FileInfo[] infosInSameFolder;
         string expectedHash;
         FileInfo hashValueFileInfo = new(path);
-        if (Settings.Current.QuickVerificationSearchPolicy
+        if (Settings.Current.QuickVerifyFileSearchPolicy
             == SearchPolicy.Children)
             infosInSameFolder = hashValueFileInfo.Directory?.GetFiles()
                 ?? Array.Empty<FileInfo>();
-        else if (Settings.Current.QuickVerificationSearchPolicy
+        else if (Settings.Current.QuickVerifyFileSearchPolicy
             == SearchPolicy.Descendants)
             infosInSameFolder = hashValueFileInfo.Directory?.GetFiles(
                 "*", SearchOption.AllDirectories)
@@ -411,11 +411,11 @@ public partial class MainWindow : Window
         CommonOpenFileDialog openFile = new()
         {
             Title = "选择文件",
-            InitialDirectory = config.SavedDirPath,
+            InitialDirectory = config.TheLastUsedPath,
         };
         if (openFile.ShowDialog() == CommonFileDialogResult.Ok)
         {
-            config.SavedDirPath = Path.GetDirectoryName(
+            config.TheLastUsedPath = Path.GetDirectoryName(
                 openFile.FileName) ?? string.Empty;
             this.uiTextBox_HashValueOrFilePath.Text = openFile.FileName;
             // TextBox_HashValueOrFilePath_Changed 已实现
@@ -443,7 +443,7 @@ public partial class MainWindow : Window
         CommonOpenFileDialog fileOpen = new()
         {
             Title = "选择文件",
-            InitialDirectory = config.SavedDirPath,
+            InitialDirectory = config.TheLastUsedPath,
             Multiselect = true,
             EnsureValidNames = true,
         };
@@ -455,7 +455,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            config.SavedDirPath = Path.GetDirectoryName(
+            config.TheLastUsedPath = Path.GetDirectoryName(
                 fileOpen.FileNames.ElementAt(0)) ?? string.Empty;
             this.AcceptNewFilePathsLockButtons();
             IEnumerable<ModelArg> modelArgs = fileOpen.FileNames.Select(s => new ModelArg(s));
@@ -466,7 +466,7 @@ public partial class MainWindow : Window
 
     private void Button_SelectFoldersToHash_Click(object sender, RoutedEventArgs e)
     {
-        if (Settings.Current.DroppedSearchPolicy == SearchPolicy.DontSearch)
+        if (Settings.Current.FileSearchPolicy == SearchPolicy.DontSearch)
         {
             MessageBox.Show(
                 "当前设置中的文件夹搜索策略为\"不搜索该文件夹\"，此按钮无法获取文件夹下的文件，请更改为其他选项。",
@@ -477,7 +477,7 @@ public partial class MainWindow : Window
         CommonOpenFileDialog folderOpen = new()
         {
             IsFolderPicker = true,
-            InitialDirectory = config.SavedDirPath,
+            InitialDirectory = config.TheLastUsedPath,
             Multiselect = true,
             EnsureValidNames = true,
         };
@@ -488,7 +488,7 @@ public partial class MainWindow : Window
                 MessageBox.Show("没有选择任何文件夹", "提示");
                 return;
             }
-            config.SavedDirPath = folderOpen.FileNames.ElementAt(0);
+            config.TheLastUsedPath = folderOpen.FileNames.ElementAt(0);
             List<string> folderPaths = new();
             this.AcceptNewFilePathsLockButtons();
             new Thread(() =>

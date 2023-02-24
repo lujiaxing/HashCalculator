@@ -93,7 +93,6 @@ internal enum CmpRes
 /// <summary>
 /// 对文件夹的搜索策略
 /// </summary>
-[Serializable]
 internal enum SearchPolicy
 {
     Children,
@@ -104,8 +103,7 @@ internal enum SearchPolicy
 /// <summary>
 /// 同时计算多少个文件的哈希值
 /// </summary>
-[Serializable]
-internal enum SimCalc
+internal enum Concurrency
 {
     One,
     Two,
@@ -116,7 +114,6 @@ internal enum SimCalc
 /// <summary>
 /// 哈希算法类型，Unknown 是创建 HashModule 实例时的默认值
 /// </summary>
-[Serializable]
 internal enum AlgoType
 {
     SHA256,

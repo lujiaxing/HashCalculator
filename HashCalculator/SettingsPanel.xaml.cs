@@ -20,18 +20,18 @@ public partial class SettingsPanel : Window
 
     private void InitializeFromConfigure(Configure config)
     {
-        this.uiCheckBox_RembMainSize.IsChecked = config.RembMainWindowSize;
-        this.uiComboBox_SearchPolicy1.SelectedIndex = (int)config.DroppedSearchPolicy;
+        this.uiCheckBox_RembMainSize.IsChecked = config.SaveMainWindowSize;
+        this.uiComboBox_SearchPolicy1.SelectedIndex = (int)config.FileSearchPolicy;
         this.uiCheckBox_UseLowercaseHash.IsChecked = config.UseLowercaseHash;
-        this.uiCheckBox_RemMainWinPos.IsChecked = config.RemMainWindowPosition;
-        this.uiComboBox_SimulCalculate.SelectedIndex = (int)config.TaskLimit;
-        this.uiComboBox_SearchPolicy2.SelectedIndex = (int)config.QuickVerificationSearchPolicy;
+        this.uiCheckBox_RemMainWinPos.IsChecked = config.SaveMainWindowPosition;
+        this.uiComboBox_SimulCalculate.SelectedIndex = (int)config.TaskNumber;
+        this.uiComboBox_SearchPolicy2.SelectedIndex = (int)config.QuickVerifyFileSearchPolicy;
         this.uiCHeckBox_ShowResultText.IsChecked = config.ShowResultText;
         this.uiCHeckBox_RecalculateIncomplete.IsChecked = config.RecalculateIncomplete;
         this.uiCHeckBox_NoExportColumn.IsChecked = config.NoExportColumn;
         this.uiCHeckBox_NoDurationColumn.IsChecked = config.NoDurationColumn;
-        this.Width = config.SettingsWinWidth;
-        this.Height = config.SettingsWinHeight;
+        this.Width = config.SettingsWindowWidth;
+        this.Height = config.SettingsWindowHeight;
     }
 
     private void Button_Apply_Click(object sender, RoutedEventArgs e)
@@ -39,12 +39,12 @@ public partial class SettingsPanel : Window
         this.uiButton_Apply.IsEnabled = false;
         this.uiButton_LoadDefault.IsEnabled = true;
         Configure config = Settings.Current;
-        config.RembMainWindowSize = this.uiCheckBox_RembMainSize.IsChecked ?? false;
-        config.DroppedSearchPolicy = (SearchPolicy)this.uiComboBox_SearchPolicy1.SelectedIndex;
+        config.SaveMainWindowSize = this.uiCheckBox_RembMainSize.IsChecked ?? false;
+        config.FileSearchPolicy = (SearchPolicy)this.uiComboBox_SearchPolicy1.SelectedIndex;
         config.UseLowercaseHash = this.uiCheckBox_UseLowercaseHash.IsChecked ?? false;
-        config.RemMainWindowPosition = this.uiCheckBox_RemMainWinPos.IsChecked ?? false;
-        config.TaskLimit = (SimCalc)this.uiComboBox_SimulCalculate.SelectedIndex;
-        config.QuickVerificationSearchPolicy = (SearchPolicy)this.uiComboBox_SearchPolicy2.SelectedIndex;
+        config.SaveMainWindowPosition = this.uiCheckBox_RemMainWinPos.IsChecked ?? false;
+        config.TaskNumber = (Concurrency)this.uiComboBox_SimulCalculate.SelectedIndex;
+        config.QuickVerifyFileSearchPolicy = (SearchPolicy)this.uiComboBox_SearchPolicy2.SelectedIndex;
         config.ShowResultText = this.uiCHeckBox_ShowResultText.IsChecked ?? false;
         config.RecalculateIncomplete = this.uiCHeckBox_RecalculateIncomplete.IsChecked ?? false;
         config.NoExportColumn = this.uiCHeckBox_NoExportColumn.IsChecked ?? false;
@@ -53,7 +53,7 @@ public partial class SettingsPanel : Window
             return;
         AppViewModel.Instance.RefreshCmpResultDisplayStyle();
         AppViewModel.Instance.SetColumnVisibility(config.NoExportColumn, config.NoDurationColumn);
-        Task.Run(() => { AppViewModel.Instance.SetConcurrent(config.TaskLimit); });
+        Task.Run(() => { AppViewModel.Instance.SetConcurrent(config.TaskNumber); });
     }
 
     private void Button_Cancel_Click(object sender, RoutedEventArgs e)
@@ -70,8 +70,8 @@ public partial class SettingsPanel : Window
 
     private void Window_SettingsPanel_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
-        Settings.Current.SettingsWinWidth = this.Width;
-        Settings.Current.SettingsWinHeight = this.Height;
+        Settings.Current.SettingsWindowWidth = this.Width;
+        Settings.Current.SettingsWindowHeight = this.Height;
         Settings.SaveConfigure();
     }
 

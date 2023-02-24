@@ -215,22 +215,22 @@ internal class AppViewModel : INotifyPropertyChanged
         lock (serialNumberLock) { this.currentSerialNumber = 0; }
     }
 
-    public void SetConcurrent(SimCalc num)
+    public void SetConcurrent(Concurrency num)
     {
         lock (concurrentLock)
         {
             switch (num)
             {
-                case SimCalc.One:
+                case Concurrency.One:
                     this.starter.Adjust(1);
                     break;
-                case SimCalc.Two:
+                case Concurrency.Two:
                     this.starter.Adjust(2);
                     break;
-                case SimCalc.Four:
+                case Concurrency.Four:
                     this.starter.Adjust(4);
                     break;
-                case SimCalc.Eight:
+                case Concurrency.Eight:
                     this.starter.Adjust(8);
                     break;
             }
