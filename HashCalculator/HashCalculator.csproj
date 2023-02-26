@@ -42,10 +42,6 @@
     <StartupObject>HashCalculator.AppLoading</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Cryptography">
-      <HintPath>Asmbs\BouncyCastle.Cryptography.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>Asmbs\Microsoft.WindowsAPICodePack.dll</HintPath>
       <Private>False</Private>
@@ -162,9 +158,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\refresh.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Asmbs\BouncyCastle.Cryptography.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

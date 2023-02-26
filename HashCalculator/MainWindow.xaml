@@ -169,7 +169,6 @@
                 SelectedIndex="0">
                 <ComboBoxItem Content="SHA256" />
                 <ComboBoxItem Content="SHA1" />
-                <ComboBoxItem Content="SHA224" />
                 <ComboBoxItem Content="SHA384" />
                 <ComboBoxItem Content="SHA512" />
                 <ComboBoxItem Content="MD5" />

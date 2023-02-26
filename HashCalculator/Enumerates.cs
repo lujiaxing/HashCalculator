@@ -121,7 +121,6 @@ namespace HashCalculator
     {
         SHA256,
         SHA1,
-        SHA224,
         SHA384,
         SHA512,
         MD5,

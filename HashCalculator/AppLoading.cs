@@ -30,8 +30,7 @@ namespace HashCalculator
         private static Assembly ApplicationAssemblyResolve(object sender, ResolveEventArgs arg)
         {
             string asmbName = new AssemblyName(arg.Name).Name;
-            if (!(asmbName == "BouncyCastle.Cryptography" ||
-                asmbName == "Microsoft.WindowsAPICodePack.Shell" ||
+            if (!(asmbName == "Microsoft.WindowsAPICodePack.Shell" ||
                 asmbName == "Microsoft.WindowsAPICodePack"))
                 return default;
             Assembly asmb = Assembly.GetExecutingAssembly();

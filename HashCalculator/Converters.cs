@@ -112,8 +112,6 @@ namespace HashCalculator
                     return "#640066FF";
                 case AlgoType.SHA1:
                     return "#64FF0071";
-                case AlgoType.SHA224:
-                    return "#64331772";
                 case AlgoType.SHA384:
                     return "#64FFBB33";
                 case AlgoType.SHA512:
@@ -340,8 +338,6 @@ namespace HashCalculator
             {
                 case AlgoType.SHA1:
                     return 270D;
-                case AlgoType.SHA224:
-                    return 380D;
                 case AlgoType.SHA256:
                     return 430D;
                 case AlgoType.SHA384:
