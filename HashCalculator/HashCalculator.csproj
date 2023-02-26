@@ -18,13 +18,10 @@
     <None Remove="Images\icon.png" />
     <None Remove="Images\information.png" />
     <None Remove="Images\pause.png" />
+    <None Remove="Images\refresh.png" />
     <None Remove="Images\start.png" />
     <None Remove="Images\stop.png" />
     <None Remove="Pages\UsingHelp.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Images\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +38,7 @@
     <Resource Include="Images\icon.png" />
     <Resource Include="Images\information.png" />
     <Resource Include="Images\pause.png" />
+    <Resource Include="Images\refresh.png" />
     <Resource Include="Images\start.png" />
     <Resource Include="Images\stop.png" />
     <Resource Include="Pages\UsingHelp.html" />
